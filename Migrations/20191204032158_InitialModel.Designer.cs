@@ -10,7 +10,7 @@ using firstApp.Core;
 namespace firstApp.Migrations
 {
     [DbContext(typeof(SiteContext))]
-    [Migration("20191203102918_InitialModel")]
+    [Migration("20191204032158_InitialModel")]
     partial class InitialModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -230,7 +230,7 @@ namespace firstApp.Migrations
 
                     b.HasKey("ClassId");
 
-                    b.ToTable("Class");
+                    b.ToTable("Classes");
                 });
 
             modelBuilder.Entity("firstApp.Entities.ClassStudent", b =>
@@ -268,7 +268,7 @@ namespace firstApp.Migrations
 
                     b.HasKey("StudentId");
 
-                    b.ToTable("Student");
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

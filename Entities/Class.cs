@@ -8,6 +8,7 @@ namespace firstApp.Entities
         [Required]
         public int ClassId{get;set;}
         [Required]
+        [StringLength(255)]
         public string ClassName{get;set;}
 
         public virtual ICollection<ClassStudent> ClassStudents{get;set;}

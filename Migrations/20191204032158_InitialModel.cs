@@ -47,7 +47,7 @@ namespace firstApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Class",
+                name: "Classes",
                 columns: table => new
                 {
                     ClassId = table.Column<int>(nullable: false)
@@ -56,11 +56,11 @@ namespace firstApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Class", x => x.ClassId);
+                    table.PrimaryKey("PK_Classes", x => x.ClassId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Student",
+                name: "Students",
                 columns: table => new
                 {
                     StudentId = table.Column<int>(nullable: false)
@@ -69,7 +69,7 @@ namespace firstApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Student", x => x.StudentId);
+                    table.PrimaryKey("PK_Students", x => x.StudentId);
                 });
 
             migrationBuilder.CreateTable(
@@ -191,15 +191,15 @@ namespace firstApp.Migrations
                 {
                     table.PrimaryKey("PK_ClassStudent", x => x.ClassStudentId);
                     table.ForeignKey(
-                        name: "FK_ClassStudent_Class_ClassId",
+                        name: "FK_ClassStudent_Classes_ClassId",
                         column: x => x.ClassId,
-                        principalTable: "Class",
+                        principalTable: "Classes",
                         principalColumn: "ClassId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ClassStudent_Student_StudentId",
+                        name: "FK_ClassStudent_Students_StudentId",
                         column: x => x.StudentId,
-                        principalTable: "Student",
+                        principalTable: "Students",
                         principalColumn: "StudentId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -281,10 +281,10 @@ namespace firstApp.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Class");
+                name: "Classes");
 
             migrationBuilder.DropTable(
-                name: "Student");
+                name: "Students");
         }
     }
 }
