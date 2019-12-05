@@ -10,9 +10,7 @@ namespace firstApp.Core
         {
 
         }
-
         public DbSet<Class> Classes {get;set;}
-
         public DbSet<Student> Students {get;set;}
         public DbSet<ClassStudent> ClassStudent {get;set;}
 

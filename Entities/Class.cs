@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace firstApp.Entities
 {
@@ -12,5 +13,10 @@ namespace firstApp.Entities
         public string ClassName{get;set;}
 
         public virtual ICollection<ClassStudent> ClassStudents{get;set;}
+
+        public Class()
+        {
+            ClassStudents = new Collection<ClassStudent>();
+        }
     }
 }
