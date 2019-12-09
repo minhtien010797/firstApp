@@ -9,16 +9,10 @@ namespace firstApp.Entities
     {
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ClassId{get;set;}
+        public int ClassId { get; set; }
         [Required]
-        [StringLength(255)]
-        public string ClassName{get;set;}
+        public string ClassName { get; set; }
 
-        public virtual ICollection<ClassStudent> ClassStudents{get;set;}
-
-        public Class()
-        {
-            ClassStudents = new Collection<ClassStudent>();
-        }
+        public virtual ICollection<ClassStudent> ClassStudents { get; set; }
     }
 }

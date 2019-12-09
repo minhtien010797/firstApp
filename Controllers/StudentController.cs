@@ -22,93 +22,91 @@ namespace firstApp.Controllers
 
 
         // Way 1: Eager Loading
-        // [HttpGet("/api/students")]
-        // public async Task<IEnumerable<ClassStudentResource>> GetStudents()
-        // {
-        //     var studentList = await context.ClassStudent.Include(c => c.Class)
-        //                                                 .Include(s => s.Student)
-        //                                                 .Select(ct => new ClassStudentResource
-        //                                                 {
-        //                                                     ClassId = ct.ClassId,
-        //                                                     StudentId = ct.StudentId,
-        //                                                     StudentName = ct.Student.StudentName,
-        //                                                     ClassName = ct.Class.ClassName,
-        //                                                 }).ToListAsync();
-        //     return studentList;
-        // }
-
-        // Way 2: Lazy Loading
-        [HttpGet("students")]
+        [HttpGet("/api/students")]
         public async Task<IEnumerable<ClassStudentResource>> GetStudents()
         {
+            // var studentList = await context.Classes.Include(c => c.Class)
+            //                                             .Include(s => s.Student)
+            //                                             .Select(ct => new ClassStudentResource
+            //                                             {
+            //                                                 ClassId = ct.ClassId,
+            //                                                 StudentId = ct.StudentId,
+            //                                                 StudentName = ct.Student.StudentName,
+            //                                                 ClassName = ct.Class.ClassName,
+            //                                             }).ToListAsync();
+            // return studentList;
 
-            create();
-            // var studentList = await context.ClassStudent.Select(ct => new ClassStudentResource
-            // {
-            //     ClassId = ct.ClassId,
-            //     StudentId = ct.StudentId,
-            //     StudentName = ct.Student.StudentName,
-            //     ClassName = ct.Class.ClassName,
-            // }).ToListAsync();
+            // create();
+            var studentList = await (from cls in context.Set<Class>()
+                            join ct in context.Set<ClassStudent>() on cls.ClassId equals ct.ClassId
+                            join st in context.Set<Student>() on ct.StudentId equals st.StudentId
+                            select new ClassStudentResource{ClassId = ct.ClassId,
+                                                            StudentId = ct.StudentId,
+                                                            StudentName = ct.Student.StudentName,
+                                                            ClassName = ct.Class.ClassName,}).ToListAsync();
 
-            return null;
+            return studentList;
         }
 
-        [HttpPost("[action]")]
-        public async Task<IActionResult> createStudent([FromBody]ClassStudentResource ct)
-        {
-            // var student = new Student()
-            // {
-            //     StudentName = "Tien"
-            // };
+        // Way 2: Lazy Loading
+        // [HttpGet("students")]
+        // public async Task<IEnumerable<ClassStudentResource>> GetStudents()
+        // {
+        //     // create();
+        //     var studentList = await context.ClassStudents.Select(ct => new ClassStudentResource
+        //     {
+        //         ClassId = ct.ClassId,
+        //         StudentId = ct.StudentId,
+        //         StudentName = ct.Student.StudentName,
+        //         ClassName = ct.Class.ClassName,
+        //     }).ToListAsync();
 
-            // var classEntity = new firstApp.Entities.Class()
-            // {
-            //     ClassName = "10A"
-            // };
+        //     return null;
+        // }
 
-            // var studentClass = new ClassStudent()
-            // {
-            //     StudentId = student.StudentId,
-            //     ClassId = classEntity.ClassId
-            // };
+        // [HttpPost("[action]")]
+        // public async Task<IActionResult> createStudent([FromBody]ClassStudentResource ct)
+        // {
+        // var student = new Student()
+        // {
+        //     StudentName = "Tien"
+        // };
 
-            // context.SaveChanges();
+        // var classEntity = new firstApp.Entities.Class()
+        // {
+        //     ClassName = "10A"
+        // };
 
-            return Ok(true);
-        }
+        // var studentClass = new ClassStudent()
+        // {
+        //     StudentId = student.StudentId,
+        //     ClassId = classEntity.ClassId
+        // };
+
+        // context.SaveChanges();
+
+        //     return Ok(true);
+        // }
 
         private void create()
         {
-            // var student = new Student()
-            // {
-            //     StudentName = "Tien"
-            // };
-
-            // context.Students.Add(student);
-            // context.Students.Attach(student);
-
-            // var classEntity = new firstApp.Entities.Class()
-            // {
-            //     ClassName = "10A"
-            // };
-
-            // context.Classes.Add(classEntity);
-            // context.Classes.Attach(classEntity);
+            var classEntity = new firstApp.Entities.Class()
+            {
+                ClassName = "10A"
+            };
+            var student = new Student()
+            {
+                StudentName = "Tien"
+            };
 
             // var studentClass = new ClassStudent()
             // {
+            //     ClassName = classEntity.ClassName;
             //     StudentId = student.StudentId,
             //     ClassId = classEntity.ClassId
             // };
 
-            // context.ClassStudent.Add(studentClass);
-            // context.ClassStudent.Attach(studentClass);
-
-            // student.ClassStudents.Add(studentClass);
-            // classEntity.ClassStudents.Add(studentClass);
-
-            // context.SaveChanges();
+            context.SaveChanges();
         }
     }
 
