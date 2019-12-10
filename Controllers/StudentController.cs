@@ -36,7 +36,7 @@ namespace firstApp.Controllers
             //                                             }).ToListAsync();
             // return studentList;
 
-            // create();
+            create();
             var studentList = await (from cls in context.Set<Class>()
                             join ct in context.Set<ClassStudent>() on cls.ClassId equals ct.ClassId
                             join st in context.Set<Student>() on ct.StudentId equals st.StudentId
@@ -45,7 +45,7 @@ namespace firstApp.Controllers
                                                             StudentName = ct.Student.StudentName,
                                                             ClassName = ct.Class.ClassName,}).ToListAsync();
 
-            return studentList;
+            return null;
         }
 
         // Way 2: Lazy Loading
@@ -99,6 +99,14 @@ namespace firstApp.Controllers
                 StudentName = "Tien"
             };
 
+            student.ClassStudents = new List<ClassStudent>
+            {
+                new ClassStudent{
+                    Class = classEntity,
+                    Student = student
+                }
+            };
+
             // var studentClass = new ClassStudent()
             // {
             //     ClassName = classEntity.ClassName;
@@ -106,6 +114,7 @@ namespace firstApp.Controllers
             //     ClassId = classEntity.ClassId
             // };
 
+            context.Students.Add(student);
             context.SaveChanges();
         }
     }
