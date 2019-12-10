@@ -10,8 +10,8 @@ using firstApp.Core;
 namespace firstApp.Migrations
 {
     [DbContext(typeof(SiteContext))]
-    [Migration("20191209095502_del-prikey-rename-dboClassStudent")]
-    partial class delprikeyrenamedboClassStudent
+    [Migration("20191210024806_edit_table_ClassStudent")]
+    partial class edit_table_ClassStudent
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -245,7 +245,7 @@ namespace firstApp.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("ClassStudent");
+                    b.ToTable("ClassStudents");
                 });
 
             modelBuilder.Entity("firstApp.Entities.Student", b =>

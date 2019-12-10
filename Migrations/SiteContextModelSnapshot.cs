@@ -243,7 +243,7 @@ namespace firstApp.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("ClassStudent");
+                    b.ToTable("ClassStudents");
                 });
 
             modelBuilder.Entity("firstApp.Entities.Student", b =>

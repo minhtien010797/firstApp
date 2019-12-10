@@ -12,7 +12,7 @@ namespace firstApp.Core
         }
         public DbSet<Class> Classes { get; set; }
         public DbSet<Student> Students { get; set; }
-        // public DbSet<ClassStudent> ClassStudents { get; set; }
+        public DbSet<ClassStudent> ClassStudents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -24,12 +24,14 @@ namespace firstApp.Core
             modelBuilder.Entity<ClassStudent>()
             .HasOne(c => c.Class)
             .WithMany(ct => ct.ClassStudents)
-            .HasForeignKey(c => c.ClassId);
+            .HasForeignKey(c => c.ClassId)
+            .IsRequired();
 
             modelBuilder.Entity<ClassStudent>()
             .HasOne(st => st.Student)
             .WithMany(ct => ct.ClassStudents)
-            .HasForeignKey(st => st.StudentId);
+            .HasForeignKey(st => st.StudentId)
+            .IsRequired();
         }
 
     }

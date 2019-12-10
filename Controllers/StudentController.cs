@@ -36,15 +36,16 @@ namespace firstApp.Controllers
             //                                             }).ToListAsync();
             // return studentList;
 
-            create();
-            var studentList = await (from cls in context.Set<Class>()
-                            join ct in context.Set<ClassStudent>() on cls.ClassId equals ct.ClassId
-                            join st in context.Set<Student>() on ct.StudentId equals st.StudentId
+            // create("11A","Huynh Nhu");
+            // update(7,"Nguyen Van Be");
+            // delete(7);
+            var studentList = await (from cls in context.Classes
+                            join ct in context.ClassStudents on cls.ClassId equals ct.ClassId
+                            join st in context.Students on ct.StudentId equals st.StudentId
                             select new ClassStudentResource{ClassId = ct.ClassId,
                                                             StudentId = ct.StudentId,
                                                             StudentName = ct.Student.StudentName,
                                                             ClassName = ct.Class.ClassName,}).ToListAsync();
-
             return null;
         }
 
@@ -88,15 +89,16 @@ namespace firstApp.Controllers
         //     return Ok(true);
         // }
 
-        private void create()
+        // INSERT: EF Many-to-Many
+        private void create(string className, string studentName)
         {
             var classEntity = new firstApp.Entities.Class()
             {
-                ClassName = "10A"
+                ClassName = className
             };
             var student = new Student()
             {
-                StudentName = "Tien"
+                StudentName = studentName
             };
 
             student.ClassStudents = new List<ClassStudent>
@@ -115,6 +117,30 @@ namespace firstApp.Controllers
             // };
 
             context.Students.Add(student);
+            context.SaveChanges();
+        }
+
+        //UPDATE:  EF Many-to-Many
+        private void update(int studentId, string newName)
+        {
+            // var student =   (from st in context.Students 
+            //                 where st.StudentId == studentId
+            //                 select st).FirstOrDefault();
+            // ANOTHER WAY WRITE LINQ
+            var student = context.Students.Where(s =>s.StudentId == studentId).FirstOrDefault();
+            student.StudentName = newName;
+            context.SaveChanges();
+        }
+
+        //DELETE: EF Many-to-Many
+        private void delete(int studentId)
+        {
+            // var student =  (from st in context.Students 
+            //                 where st.StudentId == studentId
+            //                 select st).FirstOrDefault();
+            // ANOTHER WAY WRITE LINQ
+            var student = context.Students.Where(s => s.StudentId == studentId).FirstOrDefault();
+            context.Students.Remove(student);
             context.SaveChanges();
         }
     }
