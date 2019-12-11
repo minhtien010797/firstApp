@@ -39,15 +39,56 @@ namespace firstApp.Controllers
             // create("11A","Huynh Nhu");
             // update(7,"Nguyen Van Be");
             // delete(7);
+
             var studentList = await (from cls in context.Classes
-                            join ct in context.ClassStudents on cls.ClassId equals ct.ClassId
-                            join st in context.Students on ct.StudentId equals st.StudentId
-                            select new ClassStudentResource{ClassId = ct.ClassId,
-                                                            StudentId = ct.StudentId,
-                                                            StudentName = ct.Student.StudentName,
-                                                            ClassName = ct.Class.ClassName,}).ToListAsync();
+                                     join ct in context.ClassStudents on cls.ClassId equals ct.ClassId
+                                     join st in context.Students on ct.StudentId equals st.StudentId
+                                     select new ClassStudentResource
+                                     {
+                                         ClassId = ct.ClassId,
+                                         StudentId = ct.StudentId,
+                                         StudentName = ct.Student.StudentName,
+                                         ClassName = ct.Class.ClassName,
+                                     }).ToListAsync();
+            //inner join way
+            var stdList = await context.ClassStudents.Join(context.Students,
+                                                    ct => ct.StudentId,
+                                                    std => std.StudentId,
+                                                    (ct, std) => new { ct, std })
+                                                .Join(context.Classes,
+                                                    css => css.ct.ClassId,
+                                                    c => c.ClassId,
+                                                    (css, c) => new
+                                                    {
+                                                        ClassId = c.ClassId,
+                                                        studentId = css.std.StudentId,
+                                                        StudentName = css.std.StudentName,
+                                                        ClassName = c.ClassName
+                                                    }).ToListAsync();
+
+            //left join way
+            var leftJoin = await (from s in context.Students
+                           join ct in context.ClassStudents on s.StudentId equals ct.StudentId into tempStudent
+                           from sct in tempStudent.DefaultIfEmpty()
+                           select new {
+                                ClassId = sct.ClassId,
+                                studentName = s.StudentName,
+                           }).ToListAsync();
+
+            //right join way
+            var rightJoin = await (from ct in context.ClassStudents
+                           join s in context.Students on ct.StudentId equals s.StudentId into tempStudent
+                           from sct in tempStudent.DefaultIfEmpty()
+                           select new {
+                                ct.ClassId,
+                                studentName = sct.StudentName??string.Empty,
+                           }).ToListAsync();
+
+            // full-Outer-join way
+            var fullOuterJoin = leftJoin.Union(rightJoin);
             return null;
         }
+        
 
         // Way 2: Lazy Loading
         // [HttpGet("students")]
@@ -65,29 +106,6 @@ namespace firstApp.Controllers
         //     return null;
         // }
 
-        // [HttpPost("[action]")]
-        // public async Task<IActionResult> createStudent([FromBody]ClassStudentResource ct)
-        // {
-        // var student = new Student()
-        // {
-        //     StudentName = "Tien"
-        // };
-
-        // var classEntity = new firstApp.Entities.Class()
-        // {
-        //     ClassName = "10A"
-        // };
-
-        // var studentClass = new ClassStudent()
-        // {
-        //     StudentId = student.StudentId,
-        //     ClassId = classEntity.ClassId
-        // };
-
-        // context.SaveChanges();
-
-        //     return Ok(true);
-        // }
 
         // INSERT: EF Many-to-Many
         private void create(string className, string studentName)
@@ -127,7 +145,7 @@ namespace firstApp.Controllers
             //                 where st.StudentId == studentId
             //                 select st).FirstOrDefault();
             // ANOTHER WAY WRITE LINQ
-            var student = context.Students.Where(s =>s.StudentId == studentId).FirstOrDefault();
+            var student = context.Students.Where(s => s.StudentId == studentId).FirstOrDefault();
             student.StudentName = newName;
             context.SaveChanges();
         }
