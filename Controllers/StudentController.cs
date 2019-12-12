@@ -50,6 +50,29 @@ namespace firstApp.Controllers
                                          StudentName = ct.Student.StudentName,
                                          ClassName = ct.Class.ClassName,
                                      }).ToListAsync();
+            //-----------------------------------------------------------------------------------------------------------------
+            var studList = await context.Students.ToListAsync();
+            //Quantifier Opers: All, Any, Contain
+            // Aggregation Opers: Aggregate, Average, Count, Max, Min, Sum
+            // Element Opers: ElementAt, ElementAtDefault, First, FirstOrDefault, Last, LastOrDefault, Single, SingleOrDefault
+            // Equality Oper: SequenceEqual
+            // Concatenation Oper: concat()
+            // Generation Oper: DefaultIfEmpty, Empty, Range, Repeat
+            // Set Opers: Distinct, Except, Intersect, Union
+            // Partitioning Opers: Skip, SkipWhile, Take, TakeWhile
+            // Conversion Opers:
+            
+            var stdEleAt = studList.ElementAtOrDefault(7); // Out of range: INT: 0 || STRING: NULL
+            var stdFirst = studList.FirstOrDefault(std => std.StudentName.Contains("Nguyen Van Cu"));
+            var stdLast = studList.LastOrDefault();
+            var stdConcat = studList.Concat(studList);
+
+            // Aggregate
+            var studentInList = studentList.Aggregate<ClassStudentResource, string>("Student Names:", 
+                                                                                    (std,s)=> std = std + s.StudentName + ",");
+            //Count
+            var countStudent = studList.Count();                                                                  
+            
             //inner join way
             var stdList = await context.ClassStudents.Join(context.Students,
                                                     ct => ct.StudentId,
