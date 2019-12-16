@@ -10,6 +10,7 @@ using System.Linq;
 
 namespace firstApp.Controllers
 {
+    [ApiController]
     [Route("/api/")]
     public class StudentController : ControllerBase
     {
@@ -20,27 +21,11 @@ namespace firstApp.Controllers
 
         }
 
-
-        // Way 1: Eager Loading
-        [HttpGet("/api/students")]
-        public async Task<IEnumerable<ClassStudentResource>> GetStudents()
-        {
-            // var studentList = await context.Classes.Include(c => c.Class)
-            //                                             .Include(s => s.Student)
-            //                                             .Select(ct => new ClassStudentResource
-            //                                             {
-            //                                                 ClassId = ct.ClassId,
-            //                                                 StudentId = ct.StudentId,
-            //                                                 StudentName = ct.Student.StudentName,
-            //                                                 ClassName = ct.Class.ClassName,
-            //                                             }).ToListAsync();
-            // return studentList;
-
-            // create("11A","Huynh Nhu");
-            // update(7,"Nguyen Van Be");
-            // delete(7);
-
-            var studentList = await (from cls in context.Classes
+        //GET Method
+        [HttpGet("students")]
+        public async Task<IEnumerable<ClassStudentResource>> GetAllStudents()
+        {   
+            var stdList = await (from cls in context.Classes
                                      join ct in context.ClassStudents on cls.ClassId equals ct.ClassId
                                      join st in context.Students on ct.StudentId equals st.StudentId
                                      select new ClassStudentResource
@@ -50,67 +35,138 @@ namespace firstApp.Controllers
                                          StudentName = ct.Student.StudentName,
                                          ClassName = ct.Class.ClassName,
                                      }).ToListAsync();
-            //-----------------------------------------------------------------------------------------------------------------
-            var studList = await context.Students.ToListAsync();
-            //Quantifier Opers: All, Any, Contain
-            // Aggregation Opers: Aggregate, Average, Count, Max, Min, Sum
-            // Element Opers: ElementAt, ElementAtDefault, First, FirstOrDefault, Last, LastOrDefault, Single, SingleOrDefault
-            // Equality Oper: SequenceEqual
-            // Concatenation Oper: concat()
-            // Generation Oper: DefaultIfEmpty, Empty, Range, Repeat
-            // Set Opers: Distinct, Except, Intersect, Union
-            // Partitioning Opers: Skip, SkipWhile, Take, TakeWhile
-            // Conversion Opers:
-            
-            var stdEleAt = studList.ElementAtOrDefault(7); // Out of range: INT: 0 || STRING: NULL
-            var stdFirst = studList.FirstOrDefault(std => std.StudentName.Contains("Nguyen Van Cu"));
-            var stdLast = studList.LastOrDefault();
-            var stdConcat = studList.Concat(studList);
-
-            // Aggregate
-            var studentInList = studentList.Aggregate<ClassStudentResource, string>("Student Names:", 
-                                                                                    (std,s)=> std = std + s.StudentName + ",");
-            //Count
-            var countStudent = studList.Count();                                                                  
-            
-            //inner join way
-            var stdList = await context.ClassStudents.Join(context.Students,
-                                                    ct => ct.StudentId,
-                                                    std => std.StudentId,
-                                                    (ct, std) => new { ct, std })
-                                                .Join(context.Classes,
-                                                    css => css.ct.ClassId,
-                                                    c => c.ClassId,
-                                                    (css, c) => new
-                                                    {
-                                                        ClassId = c.ClassId,
-                                                        studentId = css.std.StudentId,
-                                                        StudentName = css.std.StudentName,
-                                                        ClassName = c.ClassName
-                                                    }).ToListAsync();
-
-            //left join way
-            var leftJoin = await (from s in context.Students
-                           join ct in context.ClassStudents on s.StudentId equals ct.StudentId into tempStudent
-                           from sct in tempStudent.DefaultIfEmpty()
-                           select new {
-                                ClassId = sct.ClassId,
-                                studentName = s.StudentName,
-                           }).ToListAsync();
-
-            //right join way
-            var rightJoin = await (from ct in context.ClassStudents
-                           join s in context.Students on ct.StudentId equals s.StudentId into tempStudent
-                           from sct in tempStudent.DefaultIfEmpty()
-                           select new {
-                                ct.ClassId,
-                                studentName = sct.StudentName??string.Empty,
-                           }).ToListAsync();
-
-            // full-Outer-join way
-            var fullOuterJoin = leftJoin.Union(rightJoin);
-            return null;
+            return stdList;
         }
+
+        [HttpGet("students/{id}")]
+        public async Task<IActionResult> GetStudentIntoId(int id)
+        {   
+            var std = await (from cls in context.Classes
+                                     join ct in context.ClassStudents on cls.ClassId equals ct.ClassId
+                                     join st in context.Students on ct.StudentId equals st.StudentId
+                                     where st.StudentId == id
+                                     select new ClassStudentResource
+                                     {
+                                         ClassId = ct.ClassId,
+                                         StudentId = ct.StudentId,
+                                         StudentName = ct.Student.StudentName,
+                                         ClassName = ct.Class.ClassName,
+                                     }).ToListAsync();
+            if (std.Count == 0)
+            {
+                return NotFound(std);
+            }
+            return Ok(std);
+        }
+
+        //POST Method
+        [HttpPost("students/createStudent")]
+        public ActionResult<StudentResource> PostStudent(StudentResource student)
+        {   
+            if(!ModelState.IsValid)
+                return BadRequest("Data Invalid.");
+
+             var std = new Student()
+            {
+                StudentId = student.StudentId,
+                StudentName = student.StudentName
+            };
+
+            context.Students.Add(std);
+            context.SaveChanges();
+            return Ok(student);
+        }
+
+        // Way 1: Eager Loading
+        // [HttpGet("students")]
+        // public async Task<IEnumerable<ClassStudentResource>> GetStudents()
+        // {
+        //     // var studentList = await context.Classes.Include(c => c.Class)
+        //     //                                             .Include(s => s.Student)
+        //     //                                             .Select(ct => new ClassStudentResource
+        //     //                                             {
+        //     //                                                 ClassId = ct.ClassId,
+        //     //                                                 StudentId = ct.StudentId,
+        //     //                                                 StudentName = ct.Student.StudentName,
+        //     //                                                 ClassName = ct.Class.ClassName,
+        //     //                                             }).ToListAsync();
+        //     // return studentList;
+
+        //     // create("11A","Huynh Nhu");
+        //     // update(7,"Nguyen Van Be");
+        //     // delete(7);
+
+        //     var studentList = await (from cls in context.Classes
+        //                              join ct in context.ClassStudents on cls.ClassId equals ct.ClassId
+        //                              join st in context.Students on ct.StudentId equals st.StudentId
+        //                              select new ClassStudentResource
+        //                              {
+        //                                  ClassId = ct.ClassId,
+        //                                  StudentId = ct.StudentId,
+        //                                  StudentName = ct.Student.StudentName,
+        //                                  ClassName = ct.Class.ClassName,
+        //                              }).ToListAsync();
+        //     //-----------------------------------------------------------------------------------------------------------------
+        //     var studList = await context.Students.ToListAsync();
+        //     //Quantifier Opers: All, Any, Contain
+        //     // Aggregation Opers: Aggregate, Average, Count, Max, Min, Sum
+        //     // Element Opers: ElementAt, ElementAtDefault, First, FirstOrDefault, Last, LastOrDefault, Single, SingleOrDefault
+        //     // Equality Oper: SequenceEqual
+        //     // Concatenation Oper: concat()
+        //     // Generation Oper: DefaultIfEmpty, Empty, Range, Repeat
+        //     // Set Opers: Distinct, Except, Intersect, Union
+        //     // Partitioning Opers: Skip, SkipWhile, Take, TakeWhile
+        //     // Conversion Opers:
+            
+        //     var stdEleAt = studList.ElementAtOrDefault(7); // Out of range: INT: 0 || STRING: NULL
+        //     var stdFirst = studList.FirstOrDefault(std => std.StudentName.Contains("Nguyen Van Cu"));
+        //     var stdLast = studList.LastOrDefault();
+        //     var stdConcat = studList.Concat(studList);
+
+        //     // Aggregate
+        //     var studentInList = studentList.Aggregate<ClassStudentResource, string>("Student Names:", 
+        //                                                                             (std,s)=> std = std + s.StudentName + ",");
+        //     //Count
+        //     var countStudent = studList.Count();                                                                  
+            
+        //     //inner join way
+        //     var stdList = await context.ClassStudents.Join(context.Students,
+        //                                             ct => ct.StudentId,
+        //                                             std => std.StudentId,
+        //                                             (ct, std) => new { ct, std })
+        //                                         .Join(context.Classes,
+        //                                             css => css.ct.ClassId,
+        //                                             c => c.ClassId,
+        //                                             (css, c) => new
+        //                                             {
+        //                                                 ClassId = c.ClassId,
+        //                                                 studentId = css.std.StudentId,
+        //                                                 StudentName = css.std.StudentName,
+        //                                                 ClassName = c.ClassName
+        //                                             }).ToListAsync();
+
+        //     //left join way
+        //     var leftJoin = await (from s in context.Students
+        //                    join ct in context.ClassStudents on s.StudentId equals ct.StudentId into tempStudent
+        //                    from sct in tempStudent.DefaultIfEmpty()
+        //                    select new {
+        //                         ClassId = sct.ClassId,
+        //                         studentName = s.StudentName,
+        //                    }).ToListAsync();
+
+        //     //right join way
+        //     var rightJoin = await (from ct in context.ClassStudents
+        //                    join s in context.Students on ct.StudentId equals s.StudentId into tempStudent
+        //                    from sct in tempStudent.DefaultIfEmpty()
+        //                    select new {
+        //                         ct.ClassId,
+        //                         studentName = sct.StudentName??string.Empty,
+        //                    }).ToListAsync();
+
+        //     // full-Outer-join way
+        //     var fullOuterJoin = leftJoin.Union(rightJoin);
+        //     return null;
+        // }
         
 
         // Way 2: Lazy Loading
