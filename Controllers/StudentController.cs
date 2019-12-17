@@ -11,7 +11,7 @@ using System.Linq;
 namespace firstApp.Controllers
 {
     [ApiController]
-    [Route("/api/")]
+    [Route("/api/students/")]
     public class StudentController : ControllerBase
     {
         private readonly SiteContext context;
@@ -22,7 +22,7 @@ namespace firstApp.Controllers
         }
 
         //GET Method
-        [HttpGet("students")]
+        [HttpGet]
         public async Task<IEnumerable<ClassStudentResource>> GetAllStudents()
         {   
             var stdList = await (from cls in context.Classes
@@ -38,7 +38,7 @@ namespace firstApp.Controllers
             return stdList;
         }
 
-        [HttpGet("students/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetStudentIntoId(int id)
         {   
             var std = await (from cls in context.Classes
@@ -60,22 +60,52 @@ namespace firstApp.Controllers
         }
 
         //POST Method
-        [HttpPost("students/createStudent")]
-        public ActionResult<StudentResource> PostStudent(StudentResource student)
+        [HttpPost]
+        public async Task<ActionResult<Student>> Post(Student student)
         {   
             if(!ModelState.IsValid)
                 return BadRequest("Data Invalid.");
 
-             var std = new Student()
+            student.ClassStudents = new List<ClassStudent>
             {
-                StudentId = student.StudentId,
-                StudentName = student.StudentName
+                new ClassStudent{
+                    Student = new Student()
+                    {
+                        StudentName = student.StudentName
+                    }
+                }
             };
-
-            context.Students.Add(std);
-            context.SaveChanges();
-            return Ok(student);
+            
+            context.Students.Add(student);
+            await context.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetAllStudents), new {studentId = student.StudentId}, student);
         }
+
+        //PUT Method
+        // [HttpPut("{id}")]
+        // public async Task<ActionResult<StudentResource>> Put(StudentResource student)
+        // {   
+        //     if (!ModelState.IsValid)
+        //         return BadRequest("Invalid model.");
+        //     var std = await (context.Students.Where(st=>st.StudentId==student.StudentId)).FirstOrDefaultAsync();
+        //     if(std != null)
+        //     {   
+        //         std.StudentName = student.StudentName;
+        //     }
+        //     else
+        //     {
+                
+        //         return NotFound();
+        //     }
+        //     return Ok();
+        // } 
+
+        //DELETE Method
+        // [HttpDelete("students/{id}")]
+        // public async Task<ActionResult<StudentResource>> Delete(StudentResource student)
+        // {
+
+        // }
 
         // Way 1: Eager Loading
         // [HttpGet("students")]
@@ -205,13 +235,6 @@ namespace firstApp.Controllers
                     Student = student
                 }
             };
-
-            // var studentClass = new ClassStudent()
-            // {
-            //     ClassName = classEntity.ClassName;
-            //     StudentId = student.StudentId,
-            //     ClassId = classEntity.ClassId
-            // };
 
             context.Students.Add(student);
             context.SaveChanges();
