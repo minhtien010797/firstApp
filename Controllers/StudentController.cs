@@ -60,45 +60,51 @@ namespace firstApp.Controllers
         }
 
         //POST Method
-        [HttpPost]
-        public async Task<ActionResult<Student>> Post(Student student)
-        {   
-            if(!ModelState.IsValid)
-                return BadRequest("Data Invalid.");
+        // [HttpPost]
+        // public async Task<ActionResult<Student>> Post([FromBody] Student student)
+        // {   
+        //     if(!ModelState.IsValid)
+        //         return BadRequest("Data Invalid.");
 
-            student.ClassStudents = new List<ClassStudent>
-            {
-                new ClassStudent{
-                    Student = new Student()
-                    {
-                        StudentName = student.StudentName
-                    }
-                }
-            };
+        //     // student.ClassStudents = new List<ClassStudent>
+        //     // {
+        //     //     new ClassStudent{
+        //     //         Student = new Student()
+        //     //         {
+        //     //             StudentName = student.StudentName
+        //     //         }
+        //     //     }
+        //     // };
             
-            context.Students.Add(student);
-            await context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetAllStudents), new {studentId = student.StudentId}, student);
-        }
+        //     context.Students.Add(student);
+        //     await context.SaveChangesAsync();
+        //     return CreatedAtAction(nameof(GetAllStudents), new {studentId = student.StudentId}, student);
+        // }
 
         //PUT Method
-        // [HttpPut("{id}")]
-        // public async Task<ActionResult<StudentResource>> Put(StudentResource student)
-        // {   
-        //     if (!ModelState.IsValid)
-        //         return BadRequest("Invalid model.");
-        //     var std = await (context.Students.Where(st=>st.StudentId==student.StudentId)).FirstOrDefaultAsync();
-        //     if(std != null)
-        //     {   
-        //         std.StudentName = student.StudentName;
-        //     }
-        //     else
-        //     {
+        [HttpPut("{id}")]
+        public ActionResult<StudentResource> Put(StudentResource student)
+        {   
+            if(!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var std =  context.Students.Where(st=>st.StudentId==student.StudentId).FirstOrDefaultAsync();
+
+            if(std != null)
+            {   
+                std.StudentName = student.StudentName;
+
+                context.SaveChanges();
+            }
+            else
+            {
                 
-        //         return NotFound();
-        //     }
-        //     return Ok();
-        // } 
+                return NotFound();
+            }
+            return Ok();
+        } 
 
         //DELETE Method
         // [HttpDelete("students/{id}")]
