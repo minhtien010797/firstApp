@@ -7,6 +7,6 @@ namespace firstApp.Controllers.Resource
     {
         public int ClassId{get;set;}
         public string ClassName{get;set;}
-        public List<ClassStudentResource> ClassStudents{get;set;}
+        // public List<ClassStudentResource> ClassStudents{get;set;}
     }
 }

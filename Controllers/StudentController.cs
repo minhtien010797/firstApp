@@ -24,34 +24,34 @@ namespace firstApp.Controllers
         //GET Method
         [HttpGet]
         public async Task<IEnumerable<ClassStudentResource>> GetAllStudents()
-        {   
+        {
             var stdList = await (from cls in context.Classes
-                                     join ct in context.ClassStudents on cls.ClassId equals ct.ClassId
-                                     join st in context.Students on ct.StudentId equals st.StudentId
-                                     select new ClassStudentResource
-                                     {
-                                         ClassId = ct.ClassId,
-                                         StudentId = ct.StudentId,
-                                         StudentName = ct.Student.StudentName,
-                                         ClassName = ct.Class.ClassName,
-                                     }).ToListAsync();
+                                 join ct in context.ClassStudents on cls.ClassId equals ct.ClassId
+                                 join st in context.Students on ct.StudentId equals st.StudentId
+                                 select new ClassStudentResource
+                                 {
+                                     ClassId = ct.ClassId,
+                                     StudentId = ct.StudentId,
+                                     StudentName = ct.Student.StudentName,
+                                     ClassName = ct.Class.ClassName,
+                                 }).ToListAsync();
             return stdList;
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetStudentIntoId(int id)
-        {   
+        {
             var std = await (from cls in context.Classes
-                                     join ct in context.ClassStudents on cls.ClassId equals ct.ClassId
-                                     join st in context.Students on ct.StudentId equals st.StudentId
-                                     where st.StudentId == id
-                                     select new ClassStudentResource
-                                     {
-                                         ClassId = ct.ClassId,
-                                         StudentId = ct.StudentId,
-                                         StudentName = ct.Student.StudentName,
-                                         ClassName = ct.Class.ClassName,
-                                     }).ToListAsync();
+                             join ct in context.ClassStudents on cls.ClassId equals ct.ClassId
+                             join st in context.Students on ct.StudentId equals st.StudentId
+                             where st.StudentId == id
+                             select new ClassStudentResource
+                             {
+                                 ClassId = ct.ClassId,
+                                 StudentId = ct.StudentId,
+                                 StudentName = ct.Student.StudentName,
+                                 ClassName = ct.Class.ClassName,
+                             }).ToListAsync();
             if (std.Count == 0)
             {
                 return NotFound(std);
@@ -60,58 +60,69 @@ namespace firstApp.Controllers
         }
 
         //POST Method
-        // [HttpPost]
-        // public async Task<ActionResult<Student>> Post([FromBody] Student student)
-        // {   
-        //     if(!ModelState.IsValid)
-        //         return BadRequest("Data Invalid.");
+        [HttpPost]
+        public async Task<ActionResult<StudentResource>> Post(StudentResource student)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Data Invalid.");
 
-        //     // student.ClassStudents = new List<ClassStudent>
-        //     // {
-        //     //     new ClassStudent{
-        //     //         Student = new Student()
-        //     //         {
-        //     //             StudentName = student.StudentName
-        //     //         }
-        //     //     }
-        //     // };
-            
-        //     context.Students.Add(student);
-        //     await context.SaveChangesAsync();
-        //     return CreatedAtAction(nameof(GetAllStudents), new {studentId = student.StudentId}, student);
-        // }
+            // var std = await context.Students.Add(new StudentResource()
+            //                         {
+            //                             StudentName = student.StudentName,
+            //                         });
+
+            context.Students.Add(new Student()
+            {
+                StudentName = student.StudentName
+            });
+            await context.SaveChangesAsync();
+            return Ok();
+            // return CreatedAtAction(nameof(GetAllStudents), new {studentId = student.StudentId}, student);
+        }
 
         //PUT Method
         [HttpPut("{id}")]
-        public ActionResult<StudentResource> Put(StudentResource student)
-        {   
-            if(!ModelState.IsValid)
+        public async Task<ActionResult<StudentResource>> Put(StudentResource student)
+        {
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            var std =  context.Students.Where(st=>st.StudentId==student.StudentId).FirstOrDefaultAsync();
+            var std = await context.Students.Where(st => st.StudentId == student.StudentId)
+                                    .FirstOrDefaultAsync();
 
-            if(std != null)
-            {   
+            if (std != null)
+            {
                 std.StudentName = student.StudentName;
 
                 context.SaveChanges();
             }
             else
             {
-                
                 return NotFound();
             }
             return Ok();
-        } 
+        }
 
         //DELETE Method
-        // [HttpDelete("students/{id}")]
-        // public async Task<ActionResult<StudentResource>> Delete(StudentResource student)
-        // {
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            if (id <= 0)
+                return BadRequest("Not a valid student id");
 
-        // }
+            var std = await context.Students.Where(st => st.StudentId == id)
+                                    .FirstOrDefaultAsync();
+
+            if (std.StudentId == 0)
+                return NotFound();
+
+            context.Students.Remove(std);
+            context.SaveChanges();
+
+            return Ok();
+        }
 
         // Way 1: Eager Loading
         // [HttpGet("students")]
@@ -153,7 +164,7 @@ namespace firstApp.Controllers
         //     // Set Opers: Distinct, Except, Intersect, Union
         //     // Partitioning Opers: Skip, SkipWhile, Take, TakeWhile
         //     // Conversion Opers:
-            
+
         //     var stdEleAt = studList.ElementAtOrDefault(7); // Out of range: INT: 0 || STRING: NULL
         //     var stdFirst = studList.FirstOrDefault(std => std.StudentName.Contains("Nguyen Van Cu"));
         //     var stdLast = studList.LastOrDefault();
@@ -164,7 +175,7 @@ namespace firstApp.Controllers
         //                                                                             (std,s)=> std = std + s.StudentName + ",");
         //     //Count
         //     var countStudent = studList.Count();                                                                  
-            
+
         //     //inner join way
         //     var stdList = await context.ClassStudents.Join(context.Students,
         //                                             ct => ct.StudentId,
@@ -203,7 +214,7 @@ namespace firstApp.Controllers
         //     var fullOuterJoin = leftJoin.Union(rightJoin);
         //     return null;
         // }
-        
+
 
         // Way 2: Lazy Loading
         // [HttpGet("students")]
