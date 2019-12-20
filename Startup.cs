@@ -1,5 +1,6 @@
 using AutoMapper;
 using firstApp.Core;
+using firstApp.services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -31,6 +32,9 @@ namespace firstApp
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+
+            //Register DI
+            services.AddScoped<IStudentService, StudentClass>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
