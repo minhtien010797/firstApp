@@ -1,5 +1,6 @@
 using AutoMapper;
 using firstApp.Core;
+using firstApp.manager;
 using firstApp.services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -34,7 +35,8 @@ namespace firstApp
             });
 
             //Register DI
-            services.AddScoped<IStudentService, StudentClass>();
+            services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<IStudentManager, StudentManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

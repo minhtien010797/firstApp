@@ -15,51 +15,56 @@ namespace firstApp.Controllers
     [Route("/api/students/")]
     public class StudentController : ControllerBase
     {
-        private readonly IStudentService _student;
-        public StudentController(IStudentService student)
+        private readonly IStudentService _studentService;
+        public StudentController(IStudentService studentService)
         {
-            _student = student;
+            _studentService = studentService;
         }
 
         //GET Method
         [HttpGet]
-        public async Task<IEnumerable<StudentResource>> GetAllStudents()
+        public List<StudentResource> GetAllStudents()
         {
-            var stdList = await _student.getAll().ToListAsync();
+            var stdList = _studentService.getAll();
             return stdList;
         }
 
         [HttpGet("{id}")]
-        public async Task<IEnumerable<StudentResource>> GetStudentIntoId(int id)
+        public ActionResult<StudentResource> GetStudentById(int id)
         {
-            var std = await _student.getSingle(id).ToListAsync();
+            var std = _studentService.getById(id);
+            if(std == null)
+            {
+                return NotFound();
+            }
             return std;
         }
 
         //POST Method
-        // [HttpPost]
-        // public async Task<ActionResult<StudentResource>> Post(StudentResource student)
-        // {
-        //     if (!ModelState.IsValid)
-        //         return BadRequest("Data Invalid.");
-
-        //     // context.Students.Add(new Student()
-        //     // {
-        //     //     StudentName = student.StudentName
-        //     // });
-        //     // await context.SaveChangesAsync();
-        //     return Ok();
-        // }
+        [HttpPost]
+        public ActionResult Post(StudentResource student)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Data Invalid.");
+            _studentService.add(student);
+            // // context.Students.Add(new Student()
+            // // {
+            // //     StudentName = student.StudentName
+            // // });
+            // // await context.SaveChangesAsync();
+            return Ok();
+        }
 
         //PUT Method
-        // [HttpPut("{id}")]
-        // public async Task<ActionResult<StudentResource>> Put(StudentResource student)
-        // {
-            // if (!ModelState.IsValid)
-            // {
-            //     return BadRequest();
-            // }
+        [HttpPut("{id}")]
+        public ActionResult<StudentResource> Put(StudentResource student)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
 
+            _studentService.update(student);
             // var std = await context.Students.Where(st => st.StudentId == student.StudentId)
             //                         .FirstOrDefaultAsync();
 
@@ -73,30 +78,18 @@ namespace firstApp.Controllers
             // {
             //     return NotFound();
             // }
-        //     return Ok();
-        // }
+            return Ok();
+        }
 
         //DELETE Method
-        // [HttpDelete("{id}")]
-        // public async Task<ActionResult> Delete(int id)
-        // {
-
-
-        //     // var std = await context.Students.Where(st => st.StudentId == id)
-        //     //                         .FirstOrDefaultAsync();
-
-        //     // if (std.StudentId == 0)
-        //     //     return NotFound();
-
-        //     // context.Students.Remove(std);
-        //     // context.SaveChanges();
-
-        //     return Ok();
-        // }
-
-
-
-
+        [HttpDelete("{id}")]
+        public ActionResult Delete(int id)
+        {
+            // if (std.StudentId == 0)
+            //     return NotFound();
+            _studentService.delete(id);
+            return Ok();
+        }
 
 
 

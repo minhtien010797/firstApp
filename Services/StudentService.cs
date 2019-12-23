@@ -1,35 +1,49 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using firstApp.Controllers.Resource;
 using firstApp.Core;
 using firstApp.Entities;
+using firstApp.manager;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace firstApp.services
 {
-    public class StudentClass : IStudentService
+    public class StudentService : IStudentService
     {
-        private readonly SiteContext _context;
-        public StudentClass(SiteContext context)
+        private readonly IStudentManager _studentManager;
+        public StudentService(IStudentManager studentManager)
         {
-            _context = context;
+            _studentManager = studentManager;
         }
-        public IQueryable<StudentResource> getAll()
+
+        public List<StudentResource> getAll()
         {
-            return _context.Students.Select(s => new StudentResource
+            return _studentManager.get().Select(s => new StudentResource
             {
                 StudentId = s.StudentId,
                 StudentName = s.StudentName
-            });
+            }).ToList();
         }
-        public IQueryable<StudentResource> getSingle(int id)
+        public StudentResource getById(int id)
         {
-            return _context.Students.Where(s => s.StudentId == id).Select(st => new StudentResource
+            var x = _studentManager.getById(id);
+            return new StudentResource
             {
-                StudentId = st.StudentId,
-                StudentName = st.StudentName
+                StudentId = x.StudentId,
+                StudentName = x.StudentName
+            };
+        }
+
+        public bool add(StudentResource student)
+        {
+            _studentManager.add(new Student
+            {
+                StudentName = student.StudentName
             });
+            _studentManager.SaveChange();
+            return true;
         }
 
         // public async Task<ActionResult<StudentResource>> add(StudentResource student)
@@ -39,10 +53,15 @@ namespace firstApp.services
         //     return CreatedAtAction(nameof(getAll), new { id = student.StudentId }, student);
         // }
 
-        // public IQueryable<StudentResource> update(StudentResource student)
-        // {
-        //     throw new System.NotImplementedException();
-        // }
+        public bool update(StudentResource student)
+        {
+            _studentManager.update(new Student{
+                StudentId = student.StudentId,
+                StudentName = student.StudentName
+            });
+            _studentManager.SaveChange();
+            return true;
+        }
 
         // public IQueryable<StudentResource> delete(int id)
         // {
@@ -58,5 +77,12 @@ namespace firstApp.services
 
         //     return Ok();
         // }
+
+        public bool delete(int id)
+        {
+            _studentManager.delete(id);
+            _studentManager.SaveChange();
+            return true;
+        }
     }
 }
