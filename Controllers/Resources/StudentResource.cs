@@ -13,6 +13,7 @@ namespace firstApp.Controllers.Resource
         //     StudentId = student.StudentId;
         //     StudentName = student.StudentName;
         // }
-        // public List<ClassResource> Classes { get; set; }
+        public List<ClassResource> Classes { get; set; }
     }
 }
+

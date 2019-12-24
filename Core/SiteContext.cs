@@ -12,7 +12,7 @@ namespace firstApp.Core
         }
         public DbSet<Class> Classes { get; set; }
         public DbSet<Student> Students { get; set; }
-        // public DbSet<ClassStudent> ClassStudents { get; set; }
+        public DbSet<ClassStudent> ClassStudents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

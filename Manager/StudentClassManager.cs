@@ -1,16 +1,14 @@
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using firstApp.Controllers.Resource;
 using firstApp.Core;
 using firstApp.Entities;
+using Microsoft.EntityFrameworkCore;
 
-namespace firstApp.manager
+namespace firstApp.Manager
 {
-    public class StudentManager : IStudentManager
+    public class StudentClassManager : IStudentClassManager
     {
         private readonly SiteContext _siteContext;
-        public StudentManager(SiteContext siteContext)
+        public StudentClassManager(SiteContext siteContext)
         {
             _siteContext = siteContext;
         }
@@ -19,15 +17,17 @@ namespace firstApp.manager
         {
             return _siteContext.Students;
         }
-
-        public Student getById(int id)
+        public void SaveChange()
         {
-            return _siteContext.Students.FirstOrDefault(s => s.StudentId == id);
+            _siteContext.SaveChanges();
         }
 
         public void add(Student student)
         {
-            _siteContext.Students.Add(student);
+            _siteContext.Students.Add(new Student
+            {
+                StudentName = student.StudentName
+            });
         }
 
         public void delete(int id)
@@ -42,9 +42,5 @@ namespace firstApp.manager
             std.StudentName = student.StudentName;
         }
 
-        public void SaveChange()
-        {
-            _siteContext.SaveChanges();
-        }
     }
 }
