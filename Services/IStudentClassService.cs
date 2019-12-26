@@ -7,7 +7,7 @@ namespace firstApp.Services
     {
         List<StudentResource> getAll();
         StudentResource getById(int id);
-        bool add(StudentResource student);
+        bool add(StudentResource student, int classId);
         bool update(StudentResource student);
         bool delete(int id);
     }

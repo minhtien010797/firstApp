@@ -28,7 +28,7 @@ namespace firstApp.services
         }
         public StudentResource getById(int id)
         {
-            var x = _studentManager.getById(id);
+            var x = _studentManager.get().FirstOrDefault(s => s.StudentId == id);
             return new StudentResource
             {
                 StudentId = x.StudentId,

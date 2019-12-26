@@ -233,7 +233,7 @@ namespace firstApp.Controllers
         //     //                 where st.StudentId == studentId
         //     //                 select st).FirstOrDefault();
         //     // ANOTHER WAY WRITE LINQ
-        //     var student = context.Students.Where(s => s.StudentId == studentId).FirstOrDefault();
+        //     var student = context.Students.FirstOrDefault(s => s.StudentId == studentId);
         //     student.StudentName = newName;
         //     context.SaveChanges();
         // }
@@ -245,7 +245,7 @@ namespace firstApp.Controllers
         //     //                 where st.StudentId == studentId
         //     //                 select st).FirstOrDefault();
         //     // ANOTHER WAY WRITE LINQ
-        //     var student = context.Students.Where(s => s.StudentId == studentId).FirstOrDefault();
+        //     var student = context.Students.FirstOrDefault(s => s.StudentId == studentId);
         //     context.Students.Remove(student);
         //     context.SaveChanges();
         // }

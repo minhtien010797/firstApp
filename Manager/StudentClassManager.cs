@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using firstApp.Core;
 using firstApp.Entities;
@@ -22,12 +23,29 @@ namespace firstApp.Manager
             _siteContext.SaveChanges();
         }
 
-        public void add(Student student)
+        public void add(Student student, int classId)
         {
-            _siteContext.Students.Add(new Student
+            var studentEntity = new Student()
             {
                 StudentName = student.StudentName
-            });
+            };
+
+            var classEntity = new Class()
+            {
+                ClassName = _siteContext.Classes.Where(c => c.ClassId == classId)
+                                                .Select(x => x.ClassName)
+                                                .FirstOrDefault()
+            };
+
+            student.ClassStudents = new List<ClassStudent>
+            {
+                new ClassStudent{
+                    Class = classEntity,
+                    Student = studentEntity
+                }
+            };
+
+            _siteContext.Students.Add(studentEntity);
         }
 
         public void delete(int id)

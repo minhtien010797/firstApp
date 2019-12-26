@@ -37,16 +37,11 @@ namespace firstApp.Controllers
 
         //POST Method
         [HttpPost]
-        public ActionResult Post(StudentResource student)
+        public ActionResult Post(StudentResource student, int classId)
         {
             if (!ModelState.IsValid)
                 return BadRequest("Data Invalid.");
-            _studentClassService.add(student);
-            // // context.Students.Add(new Student()
-            // // {
-            // //     StudentName = student.StudentName
-            // // });
-            // // await context.SaveChangesAsync();
+            _studentClassService.add(student, classId);
             return Ok();
         }
 

@@ -40,24 +40,29 @@ namespace firstApp.Services
             .ThenInclude(c => c.Class)
             .FirstOrDefault(ct => ct.StudentId == id);
 
-            return new StudentResource
+            if (student != null)
             {
-                StudentId = student.StudentId,
-                StudentName = student.StudentName,
-                Classes = student.ClassStudents.Select(x => new ClassResource
+
+                return new StudentResource
                 {
-                    ClassId = x.Class.ClassId,
-                    ClassName = x.Class.ClassName
-                }).ToList()
-            };
+                    StudentId = student.StudentId,
+                    StudentName = student.StudentName,
+                    Classes = student.ClassStudents.Select(x => new ClassResource
+                    {
+                        ClassId = x.Class.ClassId,
+                        ClassName = x.Class.ClassName
+                    }).ToList()
+                };
+            }
+            return null;
         }
 
-        public bool add(StudentResource student)
+        public bool add(StudentResource student, int classId)
         {
             _studentClassManager.add(new Student
             {
                 StudentName = student.StudentName
-            });
+            }, classId);
             _studentClassManager.SaveChange();
             return true;
         }

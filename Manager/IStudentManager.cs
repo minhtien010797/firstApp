@@ -9,7 +9,6 @@ namespace firstApp.manager
     public interface IStudentManager
     {
        IQueryable<Student> get();
-       Student getById(int id);
        void add(Student student);
        void update(Student student);
        void delete(int id);

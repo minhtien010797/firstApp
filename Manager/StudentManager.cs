@@ -20,11 +20,6 @@ namespace firstApp.manager
             return _siteContext.Students;
         }
 
-        public Student getById(int id)
-        {
-            return _siteContext.Students.FirstOrDefault(s => s.StudentId == id);
-        }
-
         public void add(Student student)
         {
             _siteContext.Students.Add(student);
